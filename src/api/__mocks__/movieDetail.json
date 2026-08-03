@@ -1,0 +1,50 @@
+{
+  "status": true,
+  "msg": "Success",
+  "movie": {
+    "_id": "mock-detail-1",
+    "name": "Nhiệm Vụ Bất Khả Thi: Nghiệp Báo",
+    "slug": "nhiem-vu-bat-kha-thi-nghiep-bao",
+    "origin_name": "Mission: Impossible - Dead Reckoning",
+    "content": "Ethan Hunt và đội IMF theo dấu một loại vũ khí nguy hiểm mới có khả năng đe dọa toàn bộ nhân loại nếu rơi vào tay kẻ xấu.",
+    "type": "single",
+    "status": "completed",
+    "thumb_url": "upload/thumb-1.jpg",
+    "poster_url": "upload/poster-1.jpg",
+    "is_copyright": true,
+    "sub_docquyen": false,
+    "chieurap": true,
+    "trailer_url": "https://www.youtube.com/watch?v=2m1drlOZSDw",
+    "time": "163 phút",
+    "episode_current": "Full",
+    "episode_total": "1 Tập",
+    "quality": "FHD",
+    "lang": "Vietsub",
+    "notify": "",
+    "showtimes": "",
+    "year": 2024,
+    "actor": ["Tom Cruise", "Hayley Atwell", "Ving Rhames"],
+    "director": ["Christopher McQuarrie"],
+    "category": [
+      { "_id": "cat-1", "name": "Hành Động", "slug": "hanh-dong" },
+      { "_id": "cat-2", "name": "Phiêu Lưu", "slug": "phieu-luu" }
+    ],
+    "country": [
+      { "_id": "cou-1", "name": "Mỹ", "slug": "au-my" }
+    ]
+  },
+  "episodes": [
+    {
+      "server_name": "Vietsub #1",
+      "server_data": [
+        {
+          "name": "Full",
+          "slug": "full",
+          "filename": "Mission-Impossible-Full",
+          "link_embed": "https://player.phimapi.com/embed/nhiem-vu-bat-kha-thi",
+          "link_m3u8": "https://stream.phimapi.com/hls/nhiem-vu-bat-kha-thi/index.m3u8"
+        }
+      ]
+    }
+  ]
+}

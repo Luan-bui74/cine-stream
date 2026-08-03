@@ -1,0 +1,8 @@
+[
+  { "_id": "cou-1", "name": "Trung Quốc", "slug": "trung-quoc" },
+  { "_id": "cou-2", "name": "Hàn Quốc", "slug": "han-quoc" },
+  { "_id": "cou-3", "name": "Âu Mỹ", "slug": "au-my" },
+  { "_id": "cou-4", "name": "Nhật Bản", "slug": "nhat-ban" },
+  { "_id": "cou-5", "name": "Việt Nam", "slug": "viet-nam" },
+  { "_id": "cou-6", "name": "Thái Lan", "slug": "thai-lan" }
+]

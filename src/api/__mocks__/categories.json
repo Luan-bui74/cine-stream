@@ -1,0 +1,8 @@
+[
+  { "_id": "cat-1", "name": "Hành Động", "slug": "hanh-dong" },
+  { "_id": "cat-2", "name": "Tình Cảm", "slug": "tinh-cam" },
+  { "_id": "cat-3", "name": "Hài Hước", "slug": "hai-huoc" },
+  { "_id": "cat-4", "name": "Cổ Trang", "slug": "co-trang" },
+  { "_id": "cat-5", "name": "Tâm Lý", "slug": "tam-ly" },
+  { "_id": "cat-6", "name": "Viễn Tưởng", "slug": "vien-tuong" }
+]

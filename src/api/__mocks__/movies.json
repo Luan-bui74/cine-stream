@@ -1,0 +1,40 @@
+{
+  "status": true,
+  "msg": "Success",
+  "items": [
+    {
+      "_id": "mock-1",
+      "name": "Nhiệm Vụ Bất Khả Thi: Nghiệp Báo",
+      "slug": "nhiem-vu-bat-kha-thi-nghiep-bao",
+      "origin_name": "Mission: Impossible - Dead Reckoning",
+      "poster_url": "upload/poster-1.jpg",
+      "thumb_url": "upload/thumb-1.jpg",
+      "year": 2024,
+      "quality": "FHD",
+      "lang": "Vietsub",
+      "episode_current": "Full",
+      "time": "163 phút",
+      "type": "single"
+    },
+    {
+      "_id": "mock-2",
+      "name": "Trò Chơi Con Mực 2",
+      "slug": "tro-choi-con-muc-2",
+      "origin_name": "Squid Game Season 2",
+      "poster_url": "upload/poster-2.jpg",
+      "thumb_url": "upload/thumb-2.jpg",
+      "year": 2024,
+      "quality": "HD",
+      "lang": "Vietsub",
+      "episode_current": "Tập 6",
+      "time": "60 phút/tập",
+      "type": "series"
+    }
+  ],
+  "pagination": {
+    "totalItems": 48,
+    "totalItemsPerPage": 24,
+    "currentPage": 1,
+    "totalPages": 2
+  }
+}
