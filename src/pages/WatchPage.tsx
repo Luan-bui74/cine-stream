@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   ChevronLeft,
@@ -8,6 +8,8 @@ import {
   ListVideo,
   Play,
   Check,
+  RotateCcw,
+  RotateCw,
 } from 'lucide-react';
 import { useFetch } from '../hooks/useFetch';
 import { getMovieDetail } from '../api';
@@ -17,7 +19,7 @@ import { ServerDataItem } from '../types/movie';
 import { ROUTES } from '../lib/routes';
 
 import { Breadcrumb } from '../components/shared/Breadcrumb';
-import { VideoPlayer } from '../components/player/VideoPlayer';
+import { VideoPlayer, VideoPlayerRef } from '../components/player/VideoPlayer';
 import { AutoPlayOverlay } from '../components/player/AutoPlayOverlay';
 import { ServerTabs } from '../components/movie/ServerTabs';
 import { Badge } from '../components/ui/Badge';
@@ -30,6 +32,7 @@ export const WatchPage: React.FC = () => {
   const movieSlug = slug || '';
   const navigate = useNavigate();
 
+  const playerRef = useRef<VideoPlayerRef>(null);
   const [activeServerIdx, setActiveServerIdx] = useState(0);
   const [showAutoPlayOverlay, setShowAutoPlayOverlay] = useState(false);
 
@@ -187,6 +190,7 @@ export const WatchPage: React.FC = () => {
           {/* VIDEO PLAYER */}
           {currentEpisode ? (
             <VideoPlayer
+              ref={playerRef}
               key={`${currentEpisode.slug}-${activeServerIdx}`}
               m3u8Url={currentEpisode.link_m3u8}
               embedUrl={currentEpisode.link_embed}
@@ -207,7 +211,19 @@ export const WatchPage: React.FC = () => {
 
           {/* Player Bar Controls */}
           <div className="flex flex-wrap items-center justify-between gap-3 bg-brand-surface border border-brand-surface-border p-3.5 rounded-2xl">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Skip -10s Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                leftIcon={<RotateCcw className="w-4 h-4" />}
+                onClick={() => playerRef.current?.skip(-10)}
+                title="Tua lùi 10 giây (Phím Mũi Tên Trái / J)"
+              >
+                -10s
+              </Button>
+
+              {/* Prev Episode Button */}
               <Button
                 variant="secondary"
                 size="sm"
@@ -217,6 +233,8 @@ export const WatchPage: React.FC = () => {
               >
                 Tập trước
               </Button>
+
+              {/* Next Episode Button */}
               <Button
                 variant="primary"
                 size="sm"
@@ -225,6 +243,17 @@ export const WatchPage: React.FC = () => {
                 onClick={handleNextEpisodeClick}
               >
                 Tập sau
+              </Button>
+
+              {/* Skip +10s Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                rightIcon={<RotateCw className="w-4 h-4" />}
+                onClick={() => playerRef.current?.skip(10)}
+                title="Tua tiến 10 giây (Phím Mũi Tên Phải / L)"
+              >
+                +10s
               </Button>
             </div>
 

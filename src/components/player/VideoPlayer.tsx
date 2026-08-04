@@ -1,15 +1,8 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
 import Hls from 'hls.js';
-import { AlertCircle, RefreshCw, ShieldAlert } from 'lucide-react';
+import { AlertCircle, RefreshCw, ShieldAlert, RotateCcw, RotateCw } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { STORAGE_KEYS, TIMING } from '../../lib/constants';
-
-/**
- * TODO: Severe CORS & Referer Restriction Warning
- * Many third-party m3u8 video streams enforce strict HTTP Referer and Origin header checks.
- * In a real production environment, calling direct m3u8 URLs from client browsers may produce CORS errors.
- * Solution: Deploy a backend proxy route (e.g., /api/stream?url=...) to stream m3u8 chunks with correct origin headers.
- */
 
 export interface VideoPlayerProps {
   m3u8Url: string;
@@ -21,7 +14,14 @@ export interface VideoPlayerProps {
   onProgressUpdate?: (currentTime: number, duration: number) => void;
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({
+export interface VideoPlayerRef {
+  skip: (seconds: number) => void;
+  getCurrentTime: () => number;
+  getDuration: () => number;
+  toggleFullscreen: () => void;
+}
+
+export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
   m3u8Url,
   embedUrl,
   title,
@@ -29,17 +29,92 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   episodeSlug,
   onEnded,
   onProgressUpdate,
-}) => {
+}, ref) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const lastSavedTimeRef = useRef<number>(0);
+  const feedbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastTapRef = useRef<{ time: number; x: number }>({ time: 0, x: 0 });
+  const hideControlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [useFallbackIframe, setUseFallbackIframe] = useState<boolean>(false);
   const [playerError, setPlayerError] = useState<string | null>(null);
+  const [skipFeedback, setSkipFeedback] = useState<{ type: 'backward' | 'forward'; amount: number } | null>(null);
+  const [showControlsOverlay, setShowControlsOverlay] = useState<boolean>(true);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const storageProgressKey = STORAGE_KEYS.PROGRESS(slug, episodeSlug);
 
-  // Throttle saving playback progress (currentTime & duration) to localStorage
+  // Skip logic (-10s / +10s)
+  const handleSkip = useCallback((seconds: number) => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const current = video.currentTime || 0;
+    const duration = video.duration || 0;
+    const target = Math.min(Math.max(current + seconds, 0), duration > 0 ? duration : 999999);
+    video.currentTime = target;
+
+    // Trigger visual skip feedback ripple
+    setSkipFeedback({
+      type: seconds < 0 ? 'backward' : 'forward',
+      amount: Math.abs(seconds),
+    });
+
+    if (feedbackTimeoutRef.current) {
+      clearTimeout(feedbackTimeoutRef.current);
+    }
+    feedbackTimeoutRef.current = setTimeout(() => {
+      setSkipFeedback(null);
+    }, 700);
+  }, []);
+
+  // Toggle container Fullscreen (Synchronous user gesture call)
+  const toggleFullscreen = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const fsElem = document.fullscreenElement || (document as any).webkitFullscreenElement;
+    if (fsElem) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      }
+    } else {
+      if (container.requestFullscreen) {
+        container.requestFullscreen().catch(() => {});
+      } else if ((container as any).webkitRequestFullscreen) {
+        (container as any).webkitRequestFullscreen();
+      }
+    }
+  }, []);
+
+  // Expose imperative handle methods to parent
+  useImperativeHandle(ref, () => ({
+    skip: (seconds: number) => handleSkip(seconds),
+    getCurrentTime: () => videoRef.current?.currentTime || 0,
+    getDuration: () => videoRef.current?.duration || 0,
+    toggleFullscreen,
+  }), [handleSkip, toggleFullscreen]);
+
+  // Monitor Fullscreen status changes safely
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const fsElem = document.fullscreenElement || (document as any).webkitFullscreenElement;
+      setIsFullscreen(Boolean(fsElem));
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  // Throttle saving playback progress
   const handleTimeUpdate = useCallback(() => {
     const video = videoRef.current;
     if (!video || video.paused || video.ended) return;
@@ -88,7 +163,98 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }, [storageProgressKey]);
 
-  // Initialize Video Player
+  // Handle double-tap gestures on mobile / touch screen
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (useFallbackIframe) return;
+
+    const now = Date.now();
+    const touch = e.touches[0];
+    if (!touch || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const touchX = touch.clientX - rect.left;
+    const containerWidth = rect.width;
+
+    const timeDiff = now - lastTapRef.current.time;
+    const xDiff = Math.abs(touchX - lastTapRef.current.x);
+
+    if (timeDiff < 300 && xDiff < 80) {
+      // Double-tap detected
+      if (touchX < containerWidth * 0.4) {
+        // Double-tap on left side -> Rewind 10s
+        handleSkip(-10);
+      } else if (touchX > containerWidth * 0.6) {
+        // Double-tap on right side -> Fast forward 10s
+        handleSkip(10);
+      }
+    }
+
+    lastTapRef.current = { time: now, x: touchX };
+    triggerOverlayVisibility();
+  };
+
+  // Keyboard Shortcuts (ArrowLeft = -10s, ArrowRight = +10s, 'j' = -10s, 'l' = +10s, 'f' = Fullscreen)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (useFallbackIframe) return;
+
+      // Ignore keyboard shortcuts if user is typing in an input / textarea
+      const target = e.target as HTMLElement;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft' || e.key === 'j' || e.key === 'J') {
+        e.preventDefault();
+        handleSkip(-10);
+      } else if (e.key === 'ArrowRight' || e.key === 'l' || e.key === 'L') {
+        e.preventDefault();
+        handleSkip(10);
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleSkip, toggleFullscreen, useFallbackIframe]);
+
+  // MediaSession API Integration
+  useEffect(() => {
+    if ('mediaSession' in navigator && !useFallbackIframe) {
+      try {
+        navigator.mediaSession.setActionHandler('seekbackward', () => handleSkip(-10));
+        navigator.mediaSession.setActionHandler('seekforward', () => handleSkip(10));
+      } catch {
+        // Ignore Unsupported action handlers
+      }
+    }
+
+    return () => {
+      if ('mediaSession' in navigator) {
+        try {
+          navigator.mediaSession.setActionHandler('seekbackward', null);
+          navigator.mediaSession.setActionHandler('seekforward', null);
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    };
+  }, [handleSkip, useFallbackIframe]);
+
+  // Auto-hide controls overlay
+  const triggerOverlayVisibility = useCallback(() => {
+    setShowControlsOverlay(true);
+    if (hideControlsTimeoutRef.current) {
+      clearTimeout(hideControlsTimeoutRef.current);
+    }
+    hideControlsTimeoutRef.current = setTimeout(() => {
+      setShowControlsOverlay(false);
+    }, 3500);
+  }, []);
+
+  // Initialize Video Player (HLS / Native)
   useEffect(() => {
     const video = videoRef.current;
     if (!video || useFallbackIframe) return;
@@ -156,17 +322,84 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   };
 
   return (
-    <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black border border-brand-surface-border shadow-2xl group">
+    <div
+      ref={containerRef}
+      onTouchStart={handleTouchStart}
+      onMouseMove={triggerOverlayVisibility}
+      className={`relative w-full rounded-2xl overflow-hidden bg-black border border-brand-surface-border shadow-2xl group select-none ${
+        isFullscreen ? 'fixed inset-0 z-50 rounded-none h-screen w-screen border-none' : 'aspect-video'
+      }`}
+    >
       {!useFallbackIframe ? (
-        <video
-          ref={videoRef}
-          controls
-          playsInline
-          className="w-full h-full object-contain"
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={onEnded}
-          onError={() => setUseFallbackIframe(true)}
-        />
+        <>
+          <video
+            ref={videoRef}
+            controls
+            playsInline
+            className="w-full h-full object-contain"
+            onTimeUpdate={handleTimeUpdate}
+            onEnded={onEnded}
+            onError={() => setUseFallbackIframe(true)}
+          />
+
+          {/* Quick Skip Buttons Overlay (Visible on hover/tap) */}
+          <div
+            className={`absolute inset-0 pointer-events-none transition-opacity duration-300 z-40 flex items-center justify-between px-6 sm:px-16 ${
+              showControlsOverlay ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            {/* Rewind -10s Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSkip(-10);
+                triggerOverlayVisibility();
+              }}
+              title="Tua lùi 10 giây (Phím Mũi Tên Trái / J)"
+              className="pointer-events-auto flex flex-col items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/70 hover:bg-brand-accent text-white backdrop-blur-md border border-white/20 transition-all transform hover:scale-110 active:scale-95 shadow-2xl focus:outline-none"
+            >
+              <RotateCcw className="w-6 h-6 sm:w-7 sm:h-7" />
+              <span className="text-[10px] sm:text-xs font-black mt-0.5">-10s</span>
+            </button>
+
+            {/* Fast Forward +10s Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSkip(10);
+                triggerOverlayVisibility();
+              }}
+              title="Tua tiến 10 giây (Phím Mũi Tên Phải / L)"
+              className="pointer-events-auto flex flex-col items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/70 hover:bg-brand-accent text-white backdrop-blur-md border border-white/20 transition-all transform hover:scale-110 active:scale-95 shadow-2xl focus:outline-none"
+            >
+              <RotateCw className="w-6 h-6 sm:w-7 sm:h-7" />
+              <span className="text-[10px] sm:text-xs font-black mt-0.5">+10s</span>
+            </button>
+          </div>
+
+          {/* Double-Tap / Skip Feedback Animation Ripple */}
+          {skipFeedback && (
+            <div
+              className={`absolute top-1/2 -translate-y-1/2 z-50 pointer-events-none flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-accent text-white font-black text-xs sm:text-base shadow-accent-glow animate-bounce ${
+                skipFeedback.type === 'backward' ? 'left-8 sm:left-20' : 'right-8 sm:right-20'
+              }`}
+            >
+              {skipFeedback.type === 'backward' ? (
+                <>
+                  <RotateCcw className="w-5 h-5 animate-spin" />
+                  <span>-10 Giây</span>
+                </>
+              ) : (
+                <>
+                  <span>+10 Giây</span>
+                  <RotateCw className="w-5 h-5 animate-spin" />
+                </>
+              )}
+            </div>
+          )}
+        </>
       ) : (
         <iframe
           src={embedUrl}
@@ -210,4 +443,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       )}
     </div>
   );
-};
+});
+
+VideoPlayer.displayName = 'VideoPlayer';
