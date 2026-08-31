@@ -26,6 +26,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { ErrorState } from '../components/ui/ErrorState';
 import { Spinner } from '../components/ui/Spinner';
+import { SEO, stripHtml } from '../components/shared/SEO';
 
 export const WatchPage: React.FC = () => {
   const { slug, episodeSlug } = useParams<{ slug: string; episodeSlug?: string }>();
@@ -161,8 +162,26 @@ export const WatchPage: React.FC = () => {
       : `Tập ${currentEpisode.name}`
     : 'Tập 1';
 
+  const posterUrl = resolveImage(movie.poster_url);
+  const cleanDescription = `Xem phim ${movie.name} (${movie.origin_name}) ${epTitle} vietsub thuyết minh Full HD nhanh nhất trên CineStream. ${stripHtml(movie.content).slice(0, 150)}...`;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+      <SEO
+        title={`Xem Phim ${movie.name} - ${epTitle} Vietsub HD`}
+        description={cleanDescription}
+        keywords={`${movie.name}, xem ${movie.name} ${epTitle}, ${epTitle} ${movie.name}, phim ${movie.name} vietsub`}
+        image={posterUrl}
+        type="video.episode"
+        schema={{
+          '@type': 'VideoObject',
+          name: `${movie.name} - ${epTitle}`,
+          description: cleanDescription,
+          thumbnailUrl: [posterUrl],
+          uploadDate: movie.modified?.time || `${movie.year}-01-01`,
+        }}
+      />
+
       {/* 5s Auto Play Next Overlay */}
       {showAutoPlayOverlay && nextEpisode && (
         <AutoPlayOverlay

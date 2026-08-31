@@ -2,16 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Compass, Search, Home, ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { SEO } from '../components/shared/SEO';
 import { ROUTES } from '../lib/routes';
 import { UI_MESSAGES } from '../lib/messages';
 
 export const NotFoundPage: React.FC = () => {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    document.title = '404 - Không Tìm Thấy Trang | CineStream';
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +20,12 @@ export const NotFoundPage: React.FC = () => {
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-12">
+      <SEO
+        title="404 - Không Tìm Thấy Trang"
+        description="Đường dẫn bạn truy cập không tồn tại hoặc đã bị thay đổi."
+        robots="noindex, nofollow"
+      />
+
       <div className="max-w-md w-full space-y-6 bg-brand-surface border border-brand-surface-border p-8 rounded-3xl shadow-2xl animate-fade-in">
         {/* SVG Compass Illustration */}
         <div className="w-20 h-20 rounded-2xl bg-brand-surface-light border border-brand-surface-border text-brand-accent flex items-center justify-center mx-auto shadow-accent-glow">

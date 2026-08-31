@@ -1,0 +1,12 @@
+# Robots.txt for CineStream
+User-agent: *
+Allow: /
+
+# Disallow internal or non-indexable private routes
+Disallow: /dev/
+Disallow: /yeu-thich
+Disallow: /tu-phim
+Disallow: /lich-su
+
+# Sitemaps
+Sitemap: https://film-self.vercel.app/sitemap.xml

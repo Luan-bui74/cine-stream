@@ -6,6 +6,7 @@ import { FilterBar } from '../components/shared/FilterBar';
 import { MovieGrid } from '../components/movie/MovieGrid';
 import { Pagination } from '../components/shared/Pagination';
 import { ErrorState } from '../components/ui/ErrorState';
+import { SEO } from '../components/shared/SEO';
 import { TYPE_TABS } from '../lib/constants';
 import { ROUTES } from '../lib/routes';
 import { UI_MESSAGES } from '../lib/messages';
@@ -40,13 +41,16 @@ export const MovieListByCountryPage: React.FC = () => {
 
   const defaultTitle = `Phim ${countryName} Vietsub Mới Nhất`;
   const pageTitle = seoOnPage?.titleHead || defaultTitle;
-
-  useEffect(() => {
-    document.title = `${pageTitle} - CineStream`;
-  }, [pageTitle]);
+  const pageDescription = seoOnPage?.descriptionHead || `Tuyển tập phim ${countryName} vietsub, thuyết minh hay nhất được chọn lọc trên CineStream.`;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        keywords={`phim ${countryName}, điện ảnh ${countryName}, xem phim ${countryName}, phim vietsub`}
+      />
+
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

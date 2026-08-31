@@ -32,6 +32,7 @@ import { ServerTabs } from "../components/movie/ServerTabs";
 import { EpisodeSelector } from "../components/movie/EpisodeSelector";
 import { ErrorState } from "../components/ui/ErrorState";
 import { Toast } from "../components/ui/Toast";
+import { SEO, stripHtml } from "../components/shared/SEO";
 
 export const MovieDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -138,6 +139,11 @@ export const MovieDetailPage: React.FC = () => {
   if (!loading && (!detailData?.status || !movie)) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+        <SEO
+          title="Phim Không Tồn Tại"
+          description="Bộ phim bạn đang tìm kiếm không tồn tại hoặc đã bị gỡ bỏ."
+          robots="noindex, nofollow"
+        />
         <div className="flex flex-col items-center justify-center text-center p-12 bg-brand-surface border border-brand-surface-border rounded-2xl space-y-4">
           <div className="w-16 h-16 rounded-full bg-brand-surface-light border border-brand-surface-border flex items-center justify-center text-brand-accent">
             <Film className="w-8 h-8" />
@@ -228,8 +234,62 @@ export const MovieDetailPage: React.FC = () => {
   // Rating Display Logic
   const ratingScore = movie.tmdb?.vote_average || 0;
 
+  const movieGenres = (movie.category || []).map((c) => c.name).join(", ");
+  const cleanDescription = stripHtml(movie.content) || `Xem phim ${movie.name} (${movie.origin_name}) ${movie.year} Full HD vietsub thuyết minh.`;
+
   return (
     <div className="relative space-y-8 pb-12">
+      <SEO
+        title={`Phim ${movie.name} (${movie.year}) - Vietsub HD`}
+        description={cleanDescription}
+        keywords={`${movie.name}, ${movie.origin_name}, xem phim ${movie.name}, ${movieGenres}, phim ${movie.year}`}
+        image={posterUrl}
+        type="video.movie"
+        schema={[
+          {
+            '@type': 'Movie',
+            name: movie.name,
+            alternateName: movie.origin_name,
+            description: cleanDescription,
+            image: posterUrl,
+            datePublished: `${movie.year}`,
+            genre: (movie.category || []).map((c) => c.name),
+            ...(movie.director && movie.director.length > 0 && {
+              director: movie.director.map((d) => ({ '@type': 'Person', name: d })),
+            }),
+            ...(movie.actor && movie.actor.length > 0 && {
+              actor: movie.actor.map((a) => ({ '@type': 'Person', name: a })),
+            }),
+            ...(ratingScore > 0 && {
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: ratingScore,
+                bestRating: '10',
+                worstRating: '1',
+                ratingCount: movie.tmdb?.vote_count || 10,
+              },
+            }),
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Trang chủ',
+                item: 'https://film-self.vercel.app/',
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: movie.name,
+                item: `https://film-self.vercel.app/phim/${movie.slug}`,
+              },
+            ],
+          },
+        ]}
+      />
+
       {/* Toast Alert */}
       <Toast message={toastMessage || ""} visible={Boolean(toastMessage)} />
 

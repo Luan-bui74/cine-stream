@@ -7,6 +7,7 @@ import { resolveImage } from '../lib/utils';
 import { Breadcrumb } from '../components/shared/Breadcrumb';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Badge } from '../components/ui/Badge';
+import { SEO } from '../components/shared/SEO';
 import { ROUTES } from '../lib/routes';
 import { UI_MESSAGES } from '../lib/messages';
 
@@ -16,10 +17,6 @@ export const FavoritesPage: React.FC = () => {
 
   const [lastRemovedItem, setLastRemovedItem] = useState<BookmarkItem | null>(null);
   const [showToast, setShowToast] = useState(false);
-
-  useEffect(() => {
-    document.title = 'Tủ Phim Yêu Thích - CineStream';
-  }, []);
 
   const handleRemove = (e: React.MouseEvent, item: BookmarkItem) => {
     e.preventDefault();
@@ -41,6 +38,12 @@ export const FavoritesPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+      <SEO
+        title="Tủ Phim Yêu Thích"
+        description="Danh sách các bộ phim bạn đã lưu lại để theo dõi."
+        robots="noindex, nofollow"
+      />
+
       {/* Toast Notification with Undo Button */}
       {showToast && lastRemovedItem && (
         <div className="fixed bottom-6 right-6 z-50 animate-fade-in">

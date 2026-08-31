@@ -9,6 +9,7 @@ import { MovieGrid } from '../components/movie/MovieGrid';
 import { Pagination } from '../components/shared/Pagination';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorState } from '../components/ui/ErrorState';
+import { SEO } from '../components/shared/SEO';
 
 export const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,12 +52,6 @@ export const SearchPage: React.FC = () => {
     fetchSearchResults();
   }, [fetchSearchResults]);
 
-  useEffect(() => {
-    document.title = keyword
-      ? `Kết quả tìm kiếm cho "${keyword}" - CineStream`
-      : 'Tìm kiếm phim - CineStream';
-  }, [keyword]);
-
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', String(newPage));
@@ -70,6 +65,12 @@ export const SearchPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+      <SEO
+        title={keyword ? `Tìm kiếm: "${keyword}"` : 'Tìm kiếm phim'}
+        description={`Kết quả tìm kiếm cho từ khóa "${keyword}" trên CineStream.`}
+        robots="noindex, follow"
+      />
+
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

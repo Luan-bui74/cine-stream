@@ -9,6 +9,7 @@ import { HeroCarousel } from "../components/home/HeroCarousel";
 import { MovieGrid } from "../components/movie/MovieGrid";
 import { Button } from "../components/ui/Button";
 import { Chip } from "../components/ui/Chip";
+import { SEO } from "../components/shared/SEO";
 import { ROUTES } from "../lib/routes";
 import { PAGINATION_LIMITS } from "../lib/constants";
 import { Category } from "../types/movie";
@@ -113,6 +114,21 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-12">
+      <SEO
+        title="CineStream - Xem Phim Vietsub HD Miễn Phí Mới Nhất"
+        description="CineStream - Trang web xem phim vietsub, thuyết minh chất lượng cao Full HD miễn phí. Tổng hợp phim bộ, phim lẻ, phim chiếu rạp, anime hoạt hình hot nhất."
+        schema={{
+          '@type': 'WebSite',
+          name: 'CineStream',
+          url: 'https://film-self.vercel.app/',
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: 'https://film-self.vercel.app/tim-kiem?keyword={search_term_string}',
+            'query-input': 'required name=search_term_string',
+          },
+        }}
+      />
+
       {/* 1. Hero / Banner Carousel Section */}
       {heroMovies.length > 0 && <HeroCarousel movies={heroMovies} />}
 

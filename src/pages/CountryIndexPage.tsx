@@ -6,17 +6,20 @@ import { getCountries } from '../api';
 import { Breadcrumb } from '../components/shared/Breadcrumb';
 import { ErrorState } from '../components/ui/ErrorState';
 import { Skeleton } from '../components/ui/Skeleton';
+import { SEO } from '../components/shared/SEO';
 import { ROUTES } from '../lib/routes';
 
 export const CountryIndexPage: React.FC = () => {
   const { data: countries, loading, error, refetch } = useFetch(() => getCountries(), []);
 
-  useEffect(() => {
-    document.title = 'Danh Sách Phim Theo Quốc Gia - CineStream';
-  }, []);
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+      <SEO
+        title="Danh Sách Phim Theo Quốc Gia"
+        description="Khám phá điện ảnh phong phú từ khắp nơi trên thế giới. Xem phim Hàn Quốc, Trung Quốc, Âu Mỹ, Nhật Bản, Thái Lan vietsub mới nhất trên CineStream."
+        keywords="phim quoc gia, phim han quoc, phim trung quoc, phim au my, phim thai lan, phim nhat ban"
+      />
+
       {/* Breadcrumb */}
       <Breadcrumb items={[{ label: 'Quốc Gia Phim' }]} />
 

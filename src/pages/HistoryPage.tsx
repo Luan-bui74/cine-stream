@@ -6,6 +6,7 @@ import { resolveImage } from '../lib/utils';
 import { Breadcrumb } from '../components/shared/Breadcrumb';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Button } from '../components/ui/Button';
+import { SEO } from '../components/shared/SEO';
 import { ROUTES } from '../lib/routes';
 import { UI_MESSAGES } from '../lib/messages';
 
@@ -15,14 +16,16 @@ export const HistoryPage: React.FC = () => {
 
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
 
-  useEffect(() => {
-    document.title = 'Lịch Sử Xem Phim - CineStream';
-  }, []);
-
   const sortedHistory = [...history].sort((a, b) => b.timestamp - a.timestamp);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+      <SEO
+        title="Lịch Sử Xem Phim"
+        description="Danh sách các bộ phim bạn đã xem gần đây."
+        robots="noindex, nofollow"
+      />
+
       {/* Clear All History Confirmation Modal */}
       {confirmClearOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

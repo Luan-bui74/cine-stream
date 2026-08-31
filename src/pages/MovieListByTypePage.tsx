@@ -6,6 +6,7 @@ import { FilterBar } from '../components/shared/FilterBar';
 import { MovieGrid } from '../components/movie/MovieGrid';
 import { Pagination } from '../components/shared/Pagination';
 import { ErrorState } from '../components/ui/ErrorState';
+import { SEO } from '../components/shared/SEO';
 
 const TYPE_TITLE_MAP: Record<string, string> = {
   'phim-bo': 'Phim Bộ Vietsub Mới Nhất',
@@ -37,13 +38,16 @@ export const MovieListByTypePage: React.FC = () => {
 
   const defaultTitle = TYPE_TITLE_MAP[activeType] || `Danh Sách Phim ${activeType}`;
   const pageTitle = seoOnPage?.titleHead || defaultTitle;
-
-  useEffect(() => {
-    document.title = `${pageTitle} - CineStream`;
-  }, [pageTitle]);
+  const pageDescription = seoOnPage?.descriptionHead || `Tổng hợp ${pageTitle.toLowerCase()} chọn lọc chất lượng cao, cập nhật nhanh nhất tại CineStream.`;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        keywords={`${pageTitle}, xem phim ${activeType}, phim hd, cinestream`}
+      />
+
       {/* Breadcrumb */}
       <Breadcrumb items={[{ label: defaultTitle }]} />
 
