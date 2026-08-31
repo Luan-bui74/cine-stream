@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
                 <Film className="w-4 h-4" />
               </div>
               <span className="text-lg font-extrabold text-white">
-                Cine<span className="text-brand-accent">Stream</span>
+                Phim<span className="text-brand-accent">HD</span>
               </span>
             </Link>
             <p className="text-brand-muted text-xs leading-relaxed">
@@ -87,14 +87,14 @@ export const Footer: React.FC = () => {
               <span>Tuyên Bố Mới Bản Quyền</span>
             </div>
             <p className="text-[11px] text-brand-dim leading-relaxed">
-              CineStream không lưu trữ bất kỳ tệp video nào trên máy chủ. Tất cả nội dung được cung cấp bởi các dịch vụ của bên thứ ba không thuộc liên kết.
+              PhimHD không lưu trữ bất kỳ tệp video nào trên máy chủ. Tất cả nội dung được cung cấp bởi các dịch vụ của bên thứ ba không thuộc liên kết.
             </p>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-brand-surface-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-brand-dim">
-          <p>© {currentYear} CineStream. Tất cả quyền được bảo lưu.</p>
+          <p>© {currentYear} PhimHD. Tất cả quyền được bảo lưu.</p>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               Phát triển với <Heart className="w-3.5 h-3.5 text-brand-accent fill-brand-accent" /> cho người yêu phim

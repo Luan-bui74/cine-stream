@@ -94,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = "full" }) => {
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-extrabold tracking-tight text-brand-text flex items-center gap-1">
-                  Cine<span className="text-brand-accent">Stream</span>
+                  Phim<span className="text-brand-accent">HD</span>
                 </span>
                 {variant === "full" && (
                   <span className="text-[9px] font-medium text-brand-muted -mt-1 tracking-wider uppercase">

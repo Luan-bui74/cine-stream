@@ -115,11 +115,11 @@ export const HomePage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-12">
       <SEO
-        title="CineStream - Xem Phim Vietsub HD Miễn Phí Mới Nhất"
-        description="CineStream - Trang web xem phim vietsub, thuyết minh chất lượng cao Full HD miễn phí. Tổng hợp phim bộ, phim lẻ, phim chiếu rạp, anime hoạt hình hot nhất."
+        title="PhimHD - Xem Phim Vietsub HD Miễn Phí"
+        description="PhimHD - Trang web xem phim vietsub, thuyết minh chất lượng cao Full HD miễn phí. Tổng hợp phim bộ, phim lẻ, phim chiếu rạp, anime hoạt hình hot nhất."
         schema={{
           '@type': 'WebSite',
-          name: 'CineStream',
+          name: 'PhimHD',
           url: 'https://film-self.vercel.app/',
           potentialAction: {
             '@type': 'SearchAction',

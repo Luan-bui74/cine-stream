@@ -11,13 +11,13 @@ export interface SEOProps {
   robots?: string;
 }
 
-const DEFAULT_TITLE = 'CineStream - Xem Phim Vietsub HD Miễn Phí';
+const DEFAULT_TITLE = 'PhimHD - Xem Phim Vietsub HD Miễn Phí';
 const DEFAULT_DESCRIPTION =
-  'CineStream - Trang web xem phim vietsub, thuyết minh online chuẩn HD, Full HD miễn phí. Kho phim phong phú gồm phim bộ, phim lẻ, phim chiếu rạp, anime hoạt hình cập nhật liên tục.';
+  'PhimHD - Trang web xem phim vietsub, thuyết minh online chuẩn HD, Full HD miễn phí. Kho phim phong phú gồm phim bộ, phim lẻ, phim chiếu rạp, anime hoạt hình cập nhật liên tục.';
 const DEFAULT_KEYWORDS =
-  'xem phim, phim vietsub, phim hd, phim bo, phim le, phim chieu rap, anime, hoat hinh, phim hay 2024, cinestream';
+  'xem phim, phim vietsub, phim hd, phim bo, phim le, phim chieu rap, anime, hoat hinh, phim hay 2024, phimhd, cinestream';
 const DEFAULT_IMAGE = 'https://phimimg.com/upload/poster.jpg';
-export const SITE_NAME = 'CineStream';
+export const SITE_NAME = 'PhimHD';
 export const SITE_URL = 'https://film-self.vercel.app';
 
 /**
