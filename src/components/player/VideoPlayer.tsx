@@ -114,10 +114,45 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
     };
   }, []);
 
-  // Throttle saving playback progress
+  const hasAutoSkipped15MinRef = useRef<boolean>(false);
+
+  // Reset auto-skip flag when video source / episode changes
+  useEffect(() => {
+    hasAutoSkipped15MinRef.current = false;
+  }, [m3u8Url, episodeSlug]);
+
+  // Throttle saving playback progress & Auto-skip 30s at minute 15 (15m00s -> 15m31s)
   const handleTimeUpdate = useCallback(() => {
     const video = videoRef.current;
     if (!video || video.paused || video.ended) return;
+
+    const rawTime = video.currentTime;
+
+    // Reset auto-skip flag if user seeks back before minute 14:55 (895s)
+    if (rawTime < 895) {
+      hasAutoSkipped15MinRef.current = false;
+    } else if (
+      rawTime >= 900 &&
+      rawTime < 931 &&
+      !hasAutoSkipped15MinRef.current &&
+      (!video.duration || video.duration > 931)
+    ) {
+      // Auto skip 30s at 15m00s (900s) -> jump to 15m31s (931s)
+      hasAutoSkipped15MinRef.current = true;
+      video.currentTime = 931;
+
+      setSkipFeedback({
+        type: 'forward',
+        amount: 30,
+      });
+
+      if (feedbackTimeoutRef.current) {
+        clearTimeout(feedbackTimeoutRef.current);
+      }
+      feedbackTimeoutRef.current = setTimeout(() => {
+        setSkipFeedback(null);
+      }, 1200);
+    }
 
     const currentTime = Math.floor(video.currentTime);
     const duration = Math.floor(video.duration || 0);
@@ -389,11 +424,11 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
               {skipFeedback.type === 'backward' ? (
                 <>
                   <RotateCcw className="w-5 h-5 animate-spin" />
-                  <span>-10 Giây</span>
+                  <span>-{skipFeedback.amount} Giây</span>
                 </>
               ) : (
                 <>
-                  <span>+10 Giây</span>
+                  <span>+{skipFeedback.amount} Giây</span>
                   <RotateCw className="w-5 h-5 animate-spin" />
                 </>
               )}
