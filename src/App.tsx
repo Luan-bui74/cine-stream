@@ -6,6 +6,7 @@ import { Spinner } from './components/ui/Spinner';
 
 import { RootLayout } from './components/layout/RootLayout';
 import { PlayerLayout } from './components/layout/PlayerLayout';
+import { BackToTop } from './components/ui/BackToTop';
 
 // React.lazy Route Code-Splitting
 const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })));
@@ -79,6 +80,7 @@ export const App: React.FC = () => {
               </Route>
             </Routes>
           </Suspense>
+          <BackToTop />
         </BrowserRouter>
       </AppProvider>
     </ErrorBoundary>
