@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Calendar, Star } from 'lucide-react';
+import { Play, Calendar, Star, Eye } from 'lucide-react';
 import { MovieSummary } from '../../types/movie';
-import { resolveImage, formatEpisodeLabel } from '../../lib/utils';
+import { resolveImage, formatEpisodeLabel, formatViews } from '../../lib/utils';
 import { Badge } from '../ui/Badge';
 import { ROUTES } from '../../lib/routes';
 
@@ -85,6 +85,12 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, className = '' }) =
             <Calendar className="w-3 h-3 text-brand-dim" />
             {movie.year || 2024}
           </span>
+          {typeof movie.view === 'number' && (
+            <span className="flex items-center gap-1 text-brand-muted" title={`${movie.view.toLocaleString('vi-VN')} lượt xem`}>
+              <Eye className="w-3 h-3 text-brand-accent/80" />
+              {formatViews(movie.view)}
+            </span>
+          )}
           {movie.time && (
             <span className="truncate max-w-[90px] text-right" title={movie.time}>
               {movie.time}

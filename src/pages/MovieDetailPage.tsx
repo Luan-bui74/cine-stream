@@ -8,6 +8,7 @@ import {
   Film,
   Calendar,
   Clock,
+  Eye,
   ChevronDown,
   ChevronUp,
   User,
@@ -18,7 +19,7 @@ import {
 } from "lucide-react";
 import { useFetch } from "../hooks/useFetch";
 import { getMovieDetail, getMoviesByType, getNewMovies } from "../api";
-import { resolveImage, formatEpisodeLabel } from "../lib/utils";
+import { resolveImage, formatEpisodeLabel, formatViews } from "../lib/utils";
 import { useAppStore } from "../store/AppContext";
 import { ROUTES } from "../lib/routes";
 import { PAGINATION_LIMITS } from "../lib/constants";
@@ -347,6 +348,12 @@ export const MovieDetailPage: React.FC = () => {
                 <Calendar className="w-3 h-3 mr-1 inline" />{" "}
                 {movie.year || 2024}
               </Badge>
+              {typeof movie.view === "number" && (
+                <Badge variant="dark" className="px-2.5 py-1 text-xs">
+                  <Eye className="w-3.5 h-3.5 mr-1 text-brand-accent inline" />
+                  {formatViews(movie.view)} lượt xem
+                </Badge>
+              )}
               {movie.time && (
                 <Badge variant="dark" className="px-2.5 py-1 text-xs">
                   <Clock className="w-3 h-3 mr-1 inline" /> {movie.time}

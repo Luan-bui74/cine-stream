@@ -51,3 +51,18 @@ export function formatDate(dateString?: string): string {
     return dateString;
   }
 }
+
+/**
+ * Format view count for human-readable display (e.g. 1.2K, 3.4M or 1,234)
+ */
+export function formatViews(views?: number): string {
+  if (views === undefined || views === null) return '0';
+  if (views >= 1_000_000) {
+    return `${(views / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  }
+  if (views >= 10_000) {
+    return `${(views / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+  }
+  return views.toLocaleString('vi-VN');
+}
+

@@ -10,11 +10,12 @@ import {
   Check,
   RotateCcw,
   RotateCw,
+  Eye,
 } from 'lucide-react';
 import { useFetch } from '../hooks/useFetch';
 import { getMovieDetail } from '../api';
 import { useAppStore } from '../store/AppContext';
-import { resolveImage } from '../lib/utils';
+import { resolveImage, formatViews } from '../lib/utils';
 import { ServerDataItem } from '../types/movie';
 import { ROUTES } from '../lib/routes';
 
@@ -300,9 +301,15 @@ export const WatchPage: React.FC = () => {
               <div className="space-y-1">
                 <h1 className="font-extrabold text-base text-brand-text">{movie.name}</h1>
                 <p className="text-xs text-brand-muted italic">{movie.origin_name}</p>
-                <div className="flex items-center gap-2 pt-0.5">
+                <div className="flex items-center gap-2 pt-0.5 flex-wrap">
                   <Badge variant="accent">{epTitle}</Badge>
                   {movie.quality && <Badge variant="dark">{movie.quality}</Badge>}
+                  {typeof movie.view === "number" && (
+                    <Badge variant="dark" className="text-xs">
+                      <Eye className="w-3 h-3 mr-1 text-brand-accent inline" />
+                      {formatViews(movie.view)} lượt xem
+                    </Badge>
+                  )}
                   <span className="text-xs text-brand-dim flex items-center gap-1">
                     <Calendar className="w-3 h-3" /> {movie.year}
                   </span>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, ChevronLeft, ChevronRight, Calendar, Info } from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight, Calendar, Info, Eye } from 'lucide-react';
 import { MovieSummary } from '../../types/movie';
-import { resolveImage, formatEpisodeLabel } from '../../lib/utils';
+import { resolveImage, formatEpisodeLabel, formatViews } from '../../lib/utils';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { ROUTES } from '../../lib/routes';
@@ -78,6 +78,12 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
           {currentMovie.lang && <Badge variant="sub">{currentMovie.lang}</Badge>}
           {currentMovie.episode_current && (
             <Badge variant="dark">{formatEpisodeLabel(currentMovie.episode_current)}</Badge>
+          )}
+          {typeof currentMovie.view === 'number' && (
+            <Badge variant="dark" className="text-xs">
+              <Eye className="w-3.5 h-3.5 mr-1 text-brand-accent inline" />
+              {formatViews(currentMovie.view)} lượt xem
+            </Badge>
           )}
           <span className="text-xs font-semibold text-brand-muted flex items-center gap-1">
             <Calendar className="w-3.5 h-3.5 text-brand-accent" /> {currentMovie.year || 2024}

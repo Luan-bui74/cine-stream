@@ -65,6 +65,7 @@ export interface Movie {
   category: Category[];
   country: Country[];
   content: string;
+  view?: number;
   tmdb?: TmdbMeta;
   imdb?: ImdbMeta;
   type: MovieType;
@@ -98,6 +99,7 @@ export interface MovieSummary {
   episode_current: string;
   time?: string;
   type?: MovieType;
+  view?: number;
   modified?: {
     time: string;
   };
