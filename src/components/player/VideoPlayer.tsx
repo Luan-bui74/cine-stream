@@ -440,15 +440,40 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
           src={embedUrl}
           title={title}
           allowFullScreen
-          allow="autoplay; encrypted-media; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+          referrerPolicy="no-referrer"
           className="w-full h-full border-none"
         />
       )}
 
       {useFallbackIframe && (
-        <div className="absolute top-3 left-3 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/80 backdrop-blur-md border border-amber-500/40 text-amber-300 text-xs font-semibold shadow-lg">
-          <ShieldAlert className="w-4 h-4 text-amber-400" />
-          <span>Đang phát qua nguồn dự phòng (Embed)</span>
+        <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-2 p-2 px-3 rounded-xl bg-black/85 backdrop-blur-md border border-amber-500/40 text-amber-300 text-xs font-medium shadow-xl">
+          <div className="flex items-center gap-1.5 truncate">
+            <ShieldAlert className="w-4 h-4 text-amber-400 flex-shrink-0" />
+            <span className="truncate">Đang phát qua nguồn dự phòng (Embed)</span>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              type="button"
+              onClick={handleRetryHls}
+              className="px-2.5 py-1 rounded-lg bg-brand-surface border border-brand-surface-border text-white hover:bg-brand-accent hover:border-brand-accent text-[11px] font-semibold transition-colors cursor-pointer flex items-center gap-1"
+              title="Thử lại trình phát HLS gốc"
+            >
+              <RefreshCw className="w-3 h-3" />
+              Thử lại HLS
+            </button>
+            {embedUrl && (
+              <a
+                href={embedUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="px-2.5 py-1 rounded-lg bg-brand-surface-light border border-brand-surface-border text-brand-text hover:text-brand-accent text-[11px] font-semibold transition-colors"
+                title="Mở trình phát trong tab mới nếu bị lỗi"
+              >
+                Mở Tab Mới ↗
+              </a>
+            )}
+          </div>
         </div>
       )}
 
